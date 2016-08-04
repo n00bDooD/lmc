@@ -1,0 +1,93 @@
+bra &start
+
+bra: dat 600
+lda: dat 500
+
+1: dat 1
+
+helloworldstart:
+dat "Hello world.
+"
+helloworldend:
+
+worldhellostart:
+dat "World, hello.
+"
+worldhelloend:
+
+# pstr routine takes three arguments,
+# a memory location to start printing
+# characters from, and an end location
+# just past the end of the data.
+# pstr.ret should contain the
+# address to return to
+pstr.start: dat 0
+pstr.end: dat 0
+pstr:
+# Check if start equals end
+       lda &pstr.end
+       sub &pstr.start
+       brz &retpstr
+
+# Load start-argument to register
+       lda &pstr.start
+# Add the LDA-instruction
+       add &lda
+# Store in the next instruction
+       sta &exec
+exec:  dat 0
+       out
+
+# Load the start argument
+       lda &pstr.start
+# Add one
+       add &1
+       sta &pstr.start
+       bra &pstr
+
+retpstr:
+# Load return address to register
+       lda &pstr.ret
+# Add the BRA-instruction
+       add &bra
+# Write it all to the next instruction
+       sta &pstr.ret
+pstr.ret: dat 0
+
+
+startval: dat &helloworldstart
+endval:   dat &helloworldend
+
+retaddr:  dat &postpstr
+
+input:    dat 0
+
+start: 
+          inp
+	  sta &input
+	  sub 97
+	  brz &inverse
+
+go:
+          lda &startval
+	  sta &pstr.start
+	  lda &endval
+	  sta &pstr.end
+
+          lda &retaddr
+	  sta &pstr.ret
+
+	  bra &pstr
+
+postpstr: hlt
+
+startval2: dat &worldhellostart
+endval2:   dat &worldhelloend
+
+inverse:
+          lda &startval2
+	  sta &startval
+	  lda &endval2
+	  sta &endval
+	  bra &go
+

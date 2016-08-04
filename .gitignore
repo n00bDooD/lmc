@@ -1,0 +1,10 @@
+a.out
+*.gch
+lmc
+*.o
+bin/*
+build/*
+.release_time
+.debug_time
+.directory
+.ycm_extra_conf.*
